@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<link rel="stylesheet" type="text/css" href="css/layout.css">
+		<style>
+		table {
+		  font-family:  arial, sans-serif;
+		  border-collapse:  collapse;
+		}
+
+		td, th {
+		  border:  1px solid #dddddd;
+		  text-align:  left;
+		  padding:  8px;
+		}
+		tr: nth-child(1) {
+		  background-color:  #dddddd;
+		}
+		
+		</style>
+	</head>
+	<body>
+		<div id=content_box>
+			<H1 id="TOP">MQTT Commands</H1>
+			The following commands can be used to communicate with the Jimbi over the MQTT Protocol<br>
+			<br>
+			Every command/request is preceded by either "GET" to request the status or "SET" to update the status.<br>
+			All request messages will have a response message identical to the default PUSH messages which are triggered when new patterns or colors are triggered.<br>
+			All the information is organized in a JSON structure which is send over MQTT, this makes it possible to update multiple channels simultaneously.<br>
+			Spaces in JSON data are allowed for formatting but are not recommended due to data overhead.<br>
+			<ul>
+				<li><a href="#PWM">PWM channel message</a></li>
+				<li><a href="#RGB">RGB color message</a></li>
+				<li><a href="#RGBW">RGBW color message</a></li>
+				<li><a href="#SC">Static color message</a></li>
+				<li><a href="#BR">Brightness message</a></li>
+				<li><a href="#TR">Trigger message</a></li>
+				<li><a href="#TRBLK">Trigger block message</a></li>
+				<li><a href="#PT">Pattern message</a></li>
+				<li><a href="#PTL">Pattern list message</a></li>
+				<li><a href="#IP">IP address message</a></li>
+			</ul>
+			
+			<H2 id="PWM">PWM Channel Message</H2>
+			With the PWM channel message it's possible to directly set the value of the PWM outputs
+			
+			<H3>SET Message</H3>
+			Direction: 
+			<ul>
+				<li>Source:  MQTT</li>
+				<li>Destination:  Jimbi</li>
+			</ul>
+			Topic:  &lt;device name&gt;/&lt;jsondata&gt;<br>
+			Parameters: 
+			<ul>
+				<li>Channels:  1 - 48</li>
+				<li>Values:  0 - 255</li>
+			</ul>
+			JSON data: <br>
+				<pre>{"SET": {"PWM": {"channel1": value1,"channel2": value2}}}</pre>
+				
+			<H4>Example</H4>
+			<pre>{"SET": {"PWM": {"1": 50,"2": 60,"5": 70,"48": 3}}}</pre><br>
+			Formatted: <br>
+			<pre><code>{</code>
+<code>  "SET":  {</code>
+<code>	"PWM":  {</code>
+<code>	  "1":  50,</code>
+<code>	  "2":  60,</code>
+<code>	  "5":  70,</code>
+<code>	  "48":  3</code>
+<code>	}</code>
+<code>  }</code>
+<code>}</code></pre>
+			
+			<H3>GET Message</H3>
+			Direction: 
+			<ul>
+				<li>Source:  MQTT</li>
+				<li>Destination:  Jimbi</li>
+			</ul>
+			Topic:  &lt;device name&gt;/&lt;jsondata&gt;<br>
+			Parameters: 
+			<ul>
+				<li>Channels:  1 - 48</li>
+				<li>Values:  NA</li>
+			</ul>
+			JSON data: 		<br>
+	<pre>{"GET": {"PWM": {"channel1": NA,"channel2": NA}}}</pre>
+			
+			<H4>Example</H4>
+			<pre>{"GET": {"PWM": {"1": "NA","2": "NA","5": "NA","48": "NA"}}}</pre><br>
+			Formatted: <br>
+			<pre><code>{</code>
+<code>  "GET":  {</code>
+<code>    "PWM":  {</code>
+<code>      "1":  "NA",</code>
+<code>      "2":  "NA",</code>
+<code>      "5":  "NA",</code>
+<code>      "48":  "NA"</code>
+<code>    }</code>
+<code>  }</code>
+<code>}</code></pre>
+
+			<H3>PUSH Message</H3>
+			Direction: 
+			<ul>
+				<li>Source:  Jimbi</li>
+				<li>Destination:  MQTT</li>
+			</ul>
+			Topic:  &lt;device name&gt;/&lt;jsondata&gt;<br>
+			Parameters: 
+			<ul>
+				<li>Channels:  1 - 48</li>
+				<li>Values:  0 - 255</li>
+			</ul>
+			JSON data: 		<br>
+	<pre>{"PUSH": {"PWM": {"channel1": value1,"channel2": value2}}}</pre>
+			
+			<H4>Example</H4>
+			<pre>{"PUSH": {"PWM": {"1": 50,"2": 60,"5": 70,"48": 3}}}</pre><br>
+			Formatted: <br>
+			<pre><code>{</code>
+<code>  "PUSH":  {</code>
+<code>    "PWM":  {</code>
+<code>      "1":  50,</code>
+<code>      "2":  60,</code>
+<code>      "5":  70,</code>
+<code>      "48":  3</code>
+<code>    }</code>
+<code>  }</code>
+<code>}</code></pre>
+			<br>
+			<a href="#TOP">Back to top</a><br>
+			
+			<H2 id="RGB">RGB Color Message</H2>
+			With the RGB LED Color message it is possible to set the color of a RGB or RGBW Led strip. When a RGBW LED Strip is connected the value is converted from RGB to RGBW
+			
+			<H3>SET Message</H3>
+			Direction: 
+			<ul>
+				<li>Source:  MQTT</li>
+				<li>Destination:  Jimbi</li>
+			</ul>
+			Topic:  &lt;device name&gt;/&lt;jsondata&gt;<br>
+			Parameters: 
+			<ul>
+				<li>Channels:  1 - 16</li>
+				<li>Color:  R, G and/or B</li>
+				<li>Values:  0 - 255</li>
+			</ul>
+			JSON data: <br>
+			<pre>{"SET": {"RGB": {"channel1": {"R": Rvalue,"G": Gvalue,"B": Bvalue},"channel2": {"R": Rvalue,"G": Gvalue,"B": Bvalue}}}}</pre>
+			
+			<H4>Example</H4>
+			<pre>{"SET": {"RGB": {"1": {"R": 100,"G": 0,"B": 0},"2": {"R": 0,"G": 100,"B": 0}}}}</pre><br>
+			Formatted: <br>
+			<pre><code>{</code>
+<code>  "SET":  {</code>
+<code>    "RGB":  {</code>
+<code>      "1":  {</code>
+<code>        "R":  100,</code>
+<code>        "G":  0,</code>
+<code>        "B":  0</code>
+<code>      },</code>
+<code>      "2":  {</code>
+<code>        "R":  0,</code>
+<code>        "G":  100,</code>
+<code>        "B":  0</code>
+<code>      }</code>
+<code>    }</code>
+<code>  }</code>
+<code>}</code></pre>
+			
+			<H3>GET Message</H3>
+			Direction: 
+			<ul>
+				<li>Source:  MQTT</li>
+				<li>Destination:  Jimbi</li>
+			</ul>
+			Topic:  &lt;device name&gt;/&lt;jsondata&gt;<br>
+			Parameters: 
+			<ul>
+				<li>Channels:  1 - 16</li>
+				<li>Color:  R, G and/or B</li>
+				<li>Values:  NA</li>
+			</ul>
+			JSON data: 		<br>
+			<pre>{"GET": {"RGB": {"channel1": {"R": "NA","G": "NA","B": "NA"},"channel2": {"R": "NA","G": "NA","B": "NA"}}}}</pre>
+			
+			<H4>Example</H4>
+			<pre>{"GET": {"RGB": {"1": {"R": "NA","G": "NA","B": "NA"},"2": {"R": "NA","G": "NA","B": "NA"}}}}</pre><br>
+			Formatted: <br>
+			<pre><code>{</code>
+<code>  "GET":  {</code>
+<code>    "RGB":  {</code>
+<code>      "1":  {</code>
+<code>        "R":  "NA",</code>
+<code>        "G":  "NA",</code>
+<code>        "B":  "NA"</code>
+<code>      },</code>
+<code>      "2":  {</code>
+<code>        "R":  "NA",</code>
+<code>        "G":  "NA",</code>
+<code>        "B":  "NA"</code>
+<code>      }</code>
+<code>    }</code>
+<code>  }</code>
+<code>}</code></pre>
+
+			<H3>PUSH Message</H3>
+			Direction: 
+			<ul>
+				<li>Source:  Jimbi</li>
+				<li>Destination:  MQTT</li>
+			</ul>
+			Topic:  &lt;device name&gt;/&lt;jsondata&gt;<br>
+			Parameters: 
+			<ul>
+				<li>Channels:  1 - 16</li>
+				<li>Color:  R, G and/or B</li>
+				<li>Values:  0 - 255</li>
+			</ul>
+			JSON data: 		<br>
+			<pre>{"PUSH": {"RGB": {"channel1": {"R": Rvalue,"G": Gvalue,"B": Bvalue},"channel2": {"R": Rvalue,"G": Gvalue,"B": Bvalue}}}}</pre>
+			
+			<H4>Example</H4>
+			<pre>{"PUSH": {"RGB": {"1": {"R": 100,"G": 0,"B": 0},"2": {"R": 0,"G": 100,"B": 0}}}}</pre><br>
+			Formatted: <br>
+			<pre><code>{</code>
+<code>  "PUSH":  {</code>
+<code>    "RGB":  {</code>
+<code>      "1":  {</code>
+<code>        "R":  100,</code>
+<code>        "G":  0,</code>
+<code>        "B":  0</code>
+<code>      },</code>
+<code>      "2":  {</code>
+<code>        "R":  0,</code>
+<code>        "G":  100,</code>
+<code>        "B":  0</code>
+<code>      }</code>
+<code>    }</code>
+<code>  }</code>
+<code>}</code></pre>
+			<br>
+			<a href="#TOP">Back to top</a><br>
+
+			<H2 id="RGBW">RGBW Color Message</H2>
+			With the RGBW LED Color message it's possible to set the color of a RGBW LEDStrip.
+			
+			<H3>SET Message</H3>
+			Direction: 
+			<ul>
+				<li>Source:  MQTT</li>
+				<li>Destination:  Jimbi</li>
+			</ul>
+			Topic:  &lt;device name&gt;/&lt;jsondata&gt;<br>
+			Parameters: 
+			<ul>
+				<li>Channels:  1 - 12</li>
+				<li>Color:  R, G, B and/or W</li>
+				<li>Values:  0 - 255</li>
+			</ul>
+			JSON data: <br>
+			<pre>{"SET": {"RGBW": {"channel1": {"R": Rvalue,"G": Gvalue,"B": Bvalue,"W": Wvalue},"channel2": {"R": Rvalue,"G": Gvalue,"B": Bvalue,"W": Wvalue}}}}</pre>
+			
+			<H4>Example</H4>
+			<pre>{"SET": {"RGBW": {"1": {"R": 100,"G": 0,"B": 0,"W": 0},"2": {"R": 0,"G": 100,"B": 0,"W": 0}}}}</pre><br>
+			Formatted: <br>
+			<pre><code>{</code>
+<code>  "SET":  {</code>
+<code>    "RGBW":  {</code>
+<code>      "1":  {</code>
+<code>        "R":  100,</code>
+<code>        "G":  0,</code>
+<code>        "B":  0,</code>
+<code>        "W":  0</code>
+<code>      },</code>
+<code>      "2":  {</code>
+<code>        "R":  0,</code>
+<code>        "G":  100,</code>
+<code>        "B":  0,</code>
+<code>        "W":  0</code>
+<code>      }</code>
+<code>    }</code>
+<code>  }</code>
+<code>}</code></pre>
+
+			<H3>GET Message</H3>
+			Direction: 
+			<ul>
+				<li>Source:  MQTT</li>
+				<li>Destination:  Jimbi</li>
+			</ul>
+			Topic:  &lt;device name&gt;/&lt;jsondata&gt;<br>
+			Parameters: 
+			<ul>
+				<li>Channels:  1 - 12</li>
+				<li>Color:  R, G, B and/or W</li>
+				<li>Values:  NA</li>
+			</ul>
+			JSON data: <br>
+			<pre>{"GET": {"RGBW": {"channel1": {"R": "NA","G": "NA","B": "NA","W": "NA"},"channel2": {"R": "NA","G": "NA","B": "NA","W": "NA"}}}}</pre>
+			
+			<H4>Example</H4>
+			<pre>{"GET": {"RGBW": {"1": {"R": "NA","G": "NA","B": "NA","W": "NA"},"2": {"R": "NA","G": "NA","B": "NA","W": "NA"}}}}</pre><br>
+			Formatted: <br>
+			<pre><code>{</code>
+<code>  "GET":  {</code>
+<code>    "RGBW":  {</code>
+<code>      "1":  {</code>
+<code>        "R":  "NA",</code>
+<code>        "G":  "NA",</code>
+<code>        "B":  "NA",</code>
+<code>        "W":  "NA"</code>
+<code>      },</code>
+<code>      "2":  {</code>
+<code>        "R":  "NA",</code>
+<code>        "G":  "NA",</code>
+<code>        "B":  "NA",</code>
+<code>        "W":  "NA"</code>
+<code>      }</code>
+<code>    }</code>
+<code>  }</code>
+<code>}</code></pre>
+
+			<H3>PUSH Message</H3>
+			Direction: 
+			<ul>
+				<li>Source:  Jimbi</li>
+				<li>Destination:  MQTT</li>
+			</ul>
+			Topic:  &lt;device name&gt;/&lt;jsondata&gt;<br>
+			Parameters: 
+			<ul>
+				<li>Channels:  1 - 12</li>
+				<li>Color:  R, G, B and/or W</li>
+				<li>Values:  0 - 255</li>
+			</ul>
+			JSON data: <br>
+			<pre>{"PUSH": {"RGBW": {"channel1": {"R": Rvalue,"G": Gvalue,"B": Bvalue,"W": Wvalue},"channel2": {"R": Rvalue,"G": Gvalue,"B": Bvalue,"W": Wvalue}}}}</pre>
+			
+			<H4>Example</H4>
+			<pre>{"PUSH": {"RGBW": {"1": {"R": 100,"G": 0,"B": 0,"W": 0},"2": {"R": 0,"G": 100,"B": 0,"W": 0}}}}</pre><br>
+			Formatted: <br>
+			<pre><code>{</code>
+<code>  "PUSH":  {</code>
+<code>    "RGBW":  {</code>
+<code>      "1":  {</code>
+<code>        "R":  100,</code>
+<code>        "G":  0,</code>
+<code>        "B":  0,</code>
+<code>        "W":  0</code>
+<code>      },</code>
+<code>      "2":  {</code>
+<code>        "R":  0,</code>
+<code>        "G":  100,</code>
+<code>        "B":  0,</code>
+<code>        "W":  0</code>
+<code>      }</code>
+<code>    }</code>
+<code>  }</code>
+<code>}</code></pre>
+			<br>
+			<a href="#TOP">Back to top</a><br>
+
+			<H2 id="SC">Static Color Message</H2>
+			With the Static Color message it is possible to request the current static colors or overrule the current static colors from the values loaded from the settings at start-up
+			This new setting will be lost after a reboot of the device (stored settings will be loaded again)
+			
+			<H3>SET Message</H3>
+			Direction: 
+			<ul>
+				<li>Source:  MQTT</li>
+				<li>Destination:  Jimbi</li>
+			</ul>
+			Topic:  &lt;device name&gt;/&lt;jsondata&gt;<br>
+			Parameters: 
+			<ul>
+				<li>TR values:  </li>
+					<ol style="list-style-type:  circle; padding-bottom:  0;">
+						<li>TR1R - Trigger 1 rising edge</li>
+						<li>TR1F - Trigger 1 falling edge</li>
+						<li>TR2R - Trigger 2 rising edge</li>
+						<li>TR2F - Trigger 2 falling edge</li>
+						<li>TR3R - Trigger 3 rising edge</li>
+						<li>TR3F - Trigger 3 falling edge</li>
+						<li>TR4R - Trigger 4 rising edge</li>
+						<li>TR4F - Trigger 4 falling edge</li>
+						<li>TRSR - Trigger service key rising edge</li>
+						<li>TRSF - Trigger service key falling edge</li>
+						<li>IDLE - Idle (default, empty or invalid trigger value will also save to IDLE</li>
+					</ol>
+				<li>RGB(W) values: </li>
+					<ol style="list-style-type:  circle; padding-bottom:  0;">
+						<li>#FFFFFF   - sent RGB value (White is done automatically based on RGB value and output setting)</li>
+						<li>#FFFFFFFF - sent RGBW value</li>
+					</ol>
+			</ul>
+			JSON data: <br>
+			<pre>{"SET": {"SC": [{"TR": value,"RGB/RGBW": value"}]}}</pre>
+			
+			<H4>Examples</H4>
+			<pre>{"SET": {"SC": [{"TR": "IDLE","RGB": "#FFFFFF"}]}}</pre>
+			<pre>{"SET": {"SC": [{"TR": "IDLE","RGBW": "#FFFFFFFF"}]}}</pre>
+			<pre>{"SET": {"SC": [{"TR": "IDLE","RGB": "#FFFFFF"},{"TR": "TR1R","RGBW": "#FFFFFFFF"}]}}</pre><br>
+			
+			Formatted: <br>
+			<pre><code>{</code>
+<code>  "SET":  {</code>
+<code>    "SC":  [</code>
+<code>      {</code>
+<code>        "IDLE",</code>
+<code>        "RGB":  "#FFFFFF"</code>
+<code>      },</code>
+<code>      {</code>
+<code>        "TR1R",</code>
+<code>        "RGBW":  "#FFFFFFFF"</code>
+<code>      }</code>
+<code>    ]</code>
+<code>  }</code>
+<code>}</code></pre>
+
+			<H3>GET Message</H3>
+			Direction: 
+			<ul>
+				<li>Source:  MQTT</li>
+				<li>Destination:  Jimbi</li>
+			</ul>
+			Topic:  &lt;device name&gt;/&lt;jsondata&gt;<br>
+			Parameters: 
+			<ul>
+				<li>Values: </li>
+					<ol style="list-style-type:  circle; padding-bottom:  0;">
+						<li>NA - Request all static colors</li>
+						<li>TR1R - Trigger 1 rising edge</li>
+						<li>TR1F - Trigger 1 falling edge</li>
+						<li>TR2R - Trigger 2 rising edge</li>
+						<li>TR2F - Trigger 2 falling edge</li>
+						<li>TR3R - Trigger 3 rising edge</li>
+						<li>TR3F - Trigger 3 falling edge</li>
+						<li>TR4R - Trigger 4 rising edge</li>
+						<li>TR4F - Trigger 4 falling edge</li>
+						<li>TRSR - Trigger service key rising edge</li>
+						<li>TRSF - Trigger service key falling edge</li>
+						<li>IDLE - Idle</li>
+					</ol>
+			</ul>	
+			
+			JSON data: <br>
+			<pre>{"GET": {"SC": "NA"}}</pre>
+			<H4>Example</H4>
+			<pre>{"GET": {"SC": "NA"}}</pre><br>
+			Formatted: <br>
+			<pre><code>{</code>
+<code>  "GET":  {</code>
+<code>    "SC":  "NA"</code>
+<code>  }</code>
+<code>}</code></pre>
+			
+			<H3>PUSH Message</H3>
+			Direction: 
+			<ul>
+				<li>Source:  Jimbi</li>
+				<li>Destination:  MQTT</li>
+			</ul>
+			Topic:  &lt;device name&gt;/&lt;jsondata&gt;<br>
+			Parameters: 
+			<ul>
+				<li>TR values:  </li>
+					<ol style="list-style-type:  circle; padding-bottom:  0;">
+						<li>TR1R - Trigger 1 rising edge</li>
+						<li>TR1F - Trigger 1 falling edge</li>
+						<li>TR2R - Trigger 2 rising edge</li>
+						<li>TR2F - Trigger 2 falling edge</li>
+						<li>TR3R - Trigger 3 rising edge</li>
+						<li>TR3F - Trigger 3 falling edge</li>
+						<li>TR4R - Trigger 4 rising edge</li>
+						<li>TR4F - Trigger 4 falling edge</li>
+						<li>TRSR - Trigger service key rising edge</li>
+						<li>TRSF - Trigger service key falling edge</li>
+						<li>IDLE - Idle</li>
+					</ol>
+				<li>RGBW values: </li>
+					<ol style="list-style-type:  circle; padding-bottom:  0;">
+						<li>#FFFFFFFF (The color will always be pushed as RGBW color)</li>
+					</ol>
+			</ul>
+			JSON data: <br>
+			<pre>{"PUSH": {"SC": [{"TR": value,"RGBW": value},{"TR": value,"RGBW": value},{"TR": value,"RGBW": value},{"TR": value,"RGBW": value},{"TR": value,"RGBW": value},{"TR": value,"RGBW": value},{"TR": value,"RGBW": value},{"TR": value,"RGBW": value},{"TR": value,"RGBW": value},{"TR": value,"RGBW": value},{"TR": value,"RGBW": value}]}}</pre>
+			<H4>Example</H4>
+			<pre>{"PUSH": {"SC": [{"TR": "TR1R","RGBW": "#FFFFFFFF"},{"TR": "TR1F","RGBW": "#FFFFFFFF"},{"TR": "TR2R","RGBW": "#FFFFFFFF"},{"TR": "TR2F","RGBW": "#FFFFFFFF"},{"TR": "TR3R","RGBW": "#FFFFFFFF"},{"TR": "TR3F","RGBW": "#FFFFFFFF"},{"TR": "TR4R","RGBW": "#FFFFFFFF"},{"TR": "TR4F","RGBW": "#FFFFFFFF"},{"TR": "TRSR","RGBW": "#FFFFFFFF"},{"TR": "TRSF","RGBW": "#FFFFFFFF"},{"TR": "IDLE","RGBW": "#FFFFFFFF"}]}}</pre><br>
+			Formatted: <br>
+			<pre><code>{</code>
+<code>  "PUSH":  {</code>
+<code>    "SC":  [</code>
+<code>      {</code>
+<code>        "TR1R",</code>
+<code>        "RGBW":  "#FFFFFFFF"</code>
+<code>      },</code>
+<code>      {</code>
+<code>        "TR1F",</code>
+<code>        "RGBW":  "#FFFFFFFF"</code>
+<code>      },</code>
+<code>      {</code>
+<code>        "TR2R",</code>
+<code>        "RGBW":  "#FFFFFFFF"</code>
+<code>      },</code>
+<code>      {</code>
+<code>        "TR2F",</code>
+<code>        "RGBW":  "#FFFFFFFF"</code>
+<code>      },</code>
+<code>      {</code>
+<code>        "TR3R",</code>
+<code>        "RGBW":  "#FFFFFFFF"</code>
+<code>      },</code>
+<code>      {</code>
+<code>        "TR3F",</code>
+<code>        "RGBW":  "#FFFFFFFF"</code>
+<code>      },</code>
+<code>      {</code>
+<code>        "TR4R",</code>
+<code>        "RGBW":  "#FFFFFFFF"</code>
+<code>      },</code>
+<code>      {</code>
+<code>        "TR4F",</code>
+<code>        "RGBW":  "#FFFFFFFF"</code>
+<code>      },</code>
+<code>      {</code>
+<code>        "TRSR",</code>
+<code>        "RGBW":  "#FFFFFFFF"</code>
+<code>      },</code>
+<code>      {</code>
+<code>        "TRSF",</code>
+<code>        "RGBW":  "#FFFFFFFF"</code>
+<code>      },</code>
+<code>      {</code>
+<code>        "IDLE",</code>
+<code>        "RGBW":  "#FFFFFFFF"</code>
+<code>      }</code>
+<code>    ]</code>
+<code>  }</code>
+<code>}</code></pre>
+			<br>
+			<a href="#TOP">Back to top</a><br>
+
+			<H2 id="BR">Brightness Message</H2>
+			With the brightness message it's possible to set the brightness of all channels simultaneously.
+			<H3>SET Message</H3>
+			Direction: 
+			<ul>
+				<li>Source:  MQTT</li>
+				<li>Destination:  Jimbi</li>
+			</ul>
+			Topic:  &lt;device name&gt;/&lt;jsondata&gt;<br>
+			Parameters: 
+			<ul>
+				<li>Brightness:  0 - 100</li>
+			</ul>
+			JSON data: <br>
+			<pre>{"SET": {"BR": value}}</pre>
+			
+			<H4>Example</H4>
+			<pre>{"SET": {"BR": 50}}</pre><br>
+			Formatted: <br>
+			<pre><code>{</code>
+<code>  "SET":  {</code>
+<code>    "BR":  50</code>
+<code>  }</code>
+<code>}</code></pre>
+
+			<H3>GET Message</H3>
+			Direction: 
+			<ul>
+				<li>Source:  MQTT</li>
+				<li>Destination:  Jimbi</li>
+			</ul>
+			Topic:  &lt;device name&gt;/&lt;jsondata&gt;<br>
+			Parameters: 
+			<ul>
+				<li>Brightness:  NA</li>
+			</ul>
+			JSON data: <br>
+			<pre>{"GET": {"BR": "NA"}}</pre>
+			
+			<H4>Example</H4>
+			<pre>{"GET": {"BR": "NA"}}</pre><br>
+			Formatted: <br>
+			<pre><code>{</code>
+<code>  "GET":  {</code>
+<code>    "BR":  "NA"</code>
+<code>  }</code>
+<code>}</code></pre>
+
+			<H3>PUSH Message</H3>
+			Direction: 
+			<ul>
+				<li>Source:  Jimbi</li>
+				<li>Destination:  MQTT</li>
+			</ul>
+			Topic:  &lt;device name&gt;/&lt;jsondata&gt;<br>
+			Parameters: 
+			<ul>
+				<li>Brightness:  0 - 100</li>
+			</ul>
+			JSON data: <br>
+			<pre>{"PUSH": {"BR": value}}</pre>
+			
+			<H4>Example</H4>
+			<pre>{"PUSH": {"BR": 50}}</pre><br>
+			Formatted: <br>
+			<pre><code>{</code>
+<code>  "PUSH":  {</code>
+<code>    "BR":  50</code>
+<code>  }</code>
+<code>}</code></pre>
+			<br>
+			<a href="#TOP">Back to top</a><br>
+			
+			<H2 id="TR">Trigger Message</H2>
+			The trigger message can have two directions:  from the Jimbi to inform the user that an input<br>
+			has changed (PUSH) or to the Jimbi to simulate an input (SET)
+			
+			<H3>SET Message</H3>
+			Direction: 
+			<ul>
+				<li>Source:  MQTT</li>
+				<li>Destination:  Jimbi</li>
+			</ul>
+			Topic:  &lt;device name&gt;/&lt;jsondata&gt;<br>
+			Parameters: 
+				<li>TR values:  </li>
+					<ol style="list-style-type:  circle; padding-bottom:  0;">
+						<li>TR1R - Trigger 1 rising edge</li>
+						<li>TR1F - Trigger 1 falling edge</li>
+						<li>TR2R - Trigger 2 rising edge</li>
+						<li>TR2F - Trigger 2 falling edge</li>
+						<li>TR3R - Trigger 3 rising edge</li>
+						<li>TR3F - Trigger 3 falling edge</li>
+						<li>TR4R - Trigger 4 rising edge</li>
+						<li>TR4F - Trigger 4 falling edge</li>
+						<li>TRSR - Trigger service key rising edge</li>
+						<li>TRSF - Trigger service key falling edge</li>
+						<li>IDLE - Idle</li>
+					</ol>
+			JSON data: <br>
+			<pre>{"SET": {"TR": value}}</pre>
+			<H4>Example</H4>
+			<pre>{"SET": {"TR": "TR1R"}}</pre><br>
+			Formatted: <br>
+			<pre><code>{</code>
+<code>  "SET":  {</code>
+<code>    "TR1R"</code>
+<code>  }</code>
+<code>}</code></pre>
+			
+			<H3>PUSH Message</H3>
+			Direction: 
+			<ul>
+				<li>Source:  Jimbi</li>
+				<li>Destination:  MQTT</li>
+			</ul>
+			Topic:  &lt;device name&gt;/&lt;jsondata&gt;<br>
+			Parameters: 
+				<li>TR values:  </li>
+					<ol style="list-style-type:  circle; padding-bottom:  0;">
+						<li>NA 			- Start directly</li>
+						<li>TR1R - Trigger 1 rising edge</li>
+						<li>TR1F - Trigger 1 falling edge</li>
+						<li>TR2R - Trigger 2 rising edge</li>
+						<li>TR2F - Trigger 2 falling edge</li>
+						<li>TR3R - Trigger 3 rising edge</li>
+						<li>TR3F - Trigger 3 falling edge</li>
+						<li>TR4R - Trigger 4 rising edge</li>
+						<li>TR4F - Trigger 4 falling edge</li>
+						<li>TRSR - Trigger service key rising edge</li>
+						<li>TRSF - Trigger service key falling edge</li>
+						<li>IDLE - Idle</li>
+					</ol>
+			JSON data: <br>
+			<pre>{"PUSH": {"TR": value}}</pre>
+			<H4>Example</H4>
+			<pre>{"PUSH": {"TR": "TR1R"}}</pre><br>
+			Formatted: <br>
+			<pre><code>{</code>
+<code>  "PUSH":  {</code>
+<code>    "TR1R"</code>
+<code>  }</code>
+<code>}</code></pre>
+			<br>
+			<a href="#TOP">Back to top</a><br>
+			
+			<H2 id="TRBLK">Trigger Block Message</H2>
+			With the trigger block message it is possible to disable a trigger when it is received, even though action for a trigger is configured on the webpage
+			<H3>SET Message</H3>
+			Direction: 
+			<ul>
+				<li>Source:  MQTT</li>
+				<li>Destination:  Jimbi</li>
+			</ul>
+			Topic:  &lt;device name&gt;/&lt;jsondata&gt;<br>
+			Parameters: 
+			<li>TR values:  </li>
+				<ol style="list-style-type:  circle; padding-bottom:  0;">
+					<li>TR1R - Trigger 1 rising edge</li>
+					<li>TR1F - Trigger 1 falling edge</li>
+					<li>TR2R - Trigger 2 rising edge</li>
+					<li>TR2F - Trigger 2 falling edge</li>
+					<li>TR3R - Trigger 3 rising edge</li>
+					<li>TR3F - Trigger 3 falling edge</li>
+					<li>TR4R - Trigger 4 rising edge</li>
+					<li>TR4F - Trigger 4 falling edge</li>
+					<li>TRSR - Trigger service key rising edge</li>
+					<li>TRSF - Trigger service key falling edge</li>
+				</ol>
+			<li>BLK values:  </li>
+				<ol style="list-style-type:  circle; padding-bottom:  0;">
+					<li>T - True (Block the trigger)</li>
+					<li>F - False (Allow the trigger)</li>
+				</ol>
+			JSON data: <br>
+			<pre>{"SET": {"TRBLK": {TR value,BLK value}}}</pre>
+			<H4>Example</H4>
+			<pre>{"SET": {"TRBLK": {"TR1R": "T"},{"TR1F": "F"}}}</pre><br>
+			Formatted: <br>
+<pre><code>{</code>
+<code>  "SET":  {</code>
+<code>    "TRBLK":  </code>
+<code>      {</code>
+<code>        "TR1R":  "T"</code>
+<code>      },</code>
+<code>      {</code>
+<code>        "TR1F":  "F"</code>
+<code>      }</code>
+<code>  }</code>
+<code>}</code></pre>
+			
+			<H3>GET Message</H3>
+			Direction: 
+			<ul>
+				<li>Source:  MQTT</li>
+				<li>Destination:  Jimbi</li>
+			</ul>
+			Topic:  &lt;device name&gt;/&lt;jsondata&gt;<br>
+			Parameters: 
+			<li>TR values:  </li>
+				<ol style="list-style-type:  circle; padding-bottom:  0;">
+					<li>TR1R - Trigger 1 rising edge</li>
+					<li>TR1F - Trigger 1 falling edge</li>
+					<li>TR2R - Trigger 2 rising edge</li>
+					<li>TR2F - Trigger 2 falling edge</li>
+					<li>TR3R - Trigger 3 rising edge</li>
+					<li>TR3F - Trigger 3 falling edge</li>
+					<li>TR4R - Trigger 4 rising edge</li>
+					<li>TR4F - Trigger 4 falling edge</li>
+					<li>TRSR - Trigger service key rising edge</li>
+					<li>TRSF - Trigger service key falling edge</li>
+					<li>NA - Request all triggers
+				</ol>
+			
+			JSON data: <br>
+			<pre>{"GET": {"TRBLK": {TR value: "NA"}}}</pre>
+			<H4>Example</H4>
+			<pre>{"GET": {"TRBLK": {"TR1R":"NA"}}}</pre><br>
+			<pre>{"GET": {"TRBLK": {"NA": "NA"}}}</pre><br>
+			Formatted: <br>
+			<pre><code>{</code>
+<code>  "GET":  {</code>
+<code>    "TRBLK":  </code>
+<code>      {</code>
+<code>        "TR1R": "NA"</code>
+<code>      }</code>
+<code>  }</code>
+<code>}</code></pre>
+
+			<H3>PUSH Message</H3>
+			Direction: 
+			<ul>
+				<li>Source:  Jimbi</li>
+				<li>Destination:  MQTT</li>
+			</ul>
+			Topic:  &lt;device name&gt;/&lt;jsondata&gt;<br>
+			Parameters: 
+			<li>TR values:  </li>
+				<ol style="list-style-type:  circle; padding-bottom:  0;">
+					<li>TR1R - Trigger 1 rising edge</li>
+					<li>TR1F - Trigger 1 falling edge</li>
+					<li>TR2R - Trigger 2 rising edge</li>
+					<li>TR2F - Trigger 2 falling edge</li>
+					<li>TR3R - Trigger 3 rising edge</li>
+					<li>TR3F - Trigger 3 falling edge</li>
+					<li>TR4R - Trigger 4 rising edge</li>
+					<li>TR4F - Trigger 4 falling edge</li>
+					<li>TRSR - Trigger service key rising edge</li>
+					<li>TRSF - Trigger service key falling edge</li>
+				</ol>
+			<li>BLK values:  </li>
+				<ol style="list-style-type:  circle; padding-bottom:  0;">
+					<li>T - True (Block the trigger)</li>
+					<li>F - False (Allow the trigger)</li>
+				</ol>
+
+			JSON data: <br>
+			<pre>{"PUSH": {"TRBLK": {TR value: BLK value}, ... }}</pre>
+			<H4>Example</H4>
+			<pre>{"PUSH":{"TRBLK":{"TR1R":"F"},{"TR1F":"F"},{"TR2R":"F"},{"TR2F":"F"},{"TR3R":"F"},{"TR3F":"F"},{"TR4R":"F"},{"TR4F":"F"}{"TRSR":"F"},{"TRSF":"F"}}}</pre><br>
+			Formatted: <br>
+			<pre><code>{</code>
+<code>  "PUSH":  {</code>
+<code>    "TRBLK":  </code>
+<code>      {</code>
+<code>        "TR1R": "F"</code>
+<code>      },</code>
+<code>      {</code>
+<code>        "TR1F": "F"</code>
+<code>      },</code>
+<code>      {</code>
+<code>        "TR2R": "F"</code>
+<code>      },</code>
+<code>      {</code>
+<code>        "TR2F": "F"</code>
+<code>      },</code>
+<code>      {</code>
+<code>        "TR3R": "F"</code>
+<code>      },</code>
+<code>      {</code>
+<code>        "TR3F": "F"</code>
+<code>      },</code>
+<code>      {</code>
+<code>        "TR4R": "F"</code>
+<code>      },</code>
+<code>      {</code>
+<code>        "TR4F": "F"</code>
+<code>      },</code>
+<code>      {</code>
+<code>        "TRSR": "F"</code>
+<code>      },</code>
+<code>      {</code>
+<code>        "TRSF": "F"</code>
+<code>      }</code>
+<code>    ]</code>
+<code>  }</code>
+<code>}</code></pre>
+			<br>
+			<a href="#TOP">Back to top</a><br>
+			
+			<H2 id="PT">Pattern message</H2>
+			With the pattern message it's possible to start a specific pattern, request the currently active pattern or request the pattern configured for a trigger.<br>
+			If no trigger is specified (TR=NA) the pattern will start directly, otherwise the current trigger loaded from the settings at start-up will be overruled.<br>
+			This new setting will be lost after a reboot of the device (stored settings will be loaded again)
+			
+			<H3>SET Message</H3>
+			Direction: 
+			<ul>
+				<li>Source:  MQTT</li>
+				<li>Destination:  Jimbi</li>
+			</ul>
+			Topic:  &lt;device name&gt;/&lt;jsondata&gt;<br>
+			Parameters: 
+			<ul>
+				<li>TR values:  </li>
+					<ol style="list-style-type:  circle; padding-bottom:  0;">
+						<li>NA 			- Start directly</li>
+						<li>TR1R - Trigger 1 rising edge</li>
+						<li>TR1F - Trigger 1 falling edge</li>
+						<li>TR2R - Trigger 2 rising edge</li>
+						<li>TR2F - Trigger 2 falling edge</li>
+						<li>TR3R - Trigger 3 rising edge</li>
+						<li>TR3F - Trigger 3 falling edge</li>
+						<li>TR4R - Trigger 4 rising edge</li>
+						<li>TR4F - Trigger 4 falling edge</li>
+						<li>TRSR - Trigger service key rising edge</li>
+						<li>TRSF - Trigger service key falling edge</li>
+						<li>IDLE - Idle</li>
+					</ol>
+				<li>NAME values:  ASCII</li>
+					<ol style="list-style-type:  circle; padding-bottom:  0;">
+						<li>NA 			- Clear trigger</li>
+						<li>&lt;pattern name&gt;</li>
+					</ol>
+			</ul>
+			
+			JSON data: <br>
+			<pre>{"SET": {"PT": {"TR": value},"NAME": "&lt;pattern name&gt;"}}</pre>
+			<H4>Example</H4>
+			<pre>{"SET": {"PT": {"TR": "NA""NAME": "Upstairs"}}}</pre><br>
+			Formatted: <br>
+			<pre><code>{</code>
+<code>  "SET":  {</code>
+<code>    "PT":  {</code>
+<code>      "NA",</code>
+<code>      "NAME":  "Upstairs"</code>
+<code>    }</code>
+<code>  }</code>
+<code>}</code></pre>
+			<br>
+			<H3>GET Message</H3>
+			Direction: 
+			<ul>
+				<li>Source:  MQTT</li>
+				<li>Destination:  Jimbi</li>
+			</ul>
+			Topic:  &lt;device name&gt;/&lt;jsondata&gt;<br>
+			Parameters: 
+			<ul>
+				<li>TR values:  </li>
+					<ol style="list-style-type:  circle; padding-bottom:  0;">
+						<li>NA 			- Running pattern</li>
+						<li>TR1R - Trigger 1 rising edge</li>
+						<li>TR1F - Trigger 1 falling edge</li>
+						<li>TR2R - Trigger 2 rising edge</li>
+						<li>TR2F - Trigger 2 falling edge</li>
+						<li>TR3R - Trigger 3 rising edge</li>
+						<li>TR3F - Trigger 3 falling edge</li>
+						<li>TR4R - Trigger 4 rising edge</li>
+						<li>TR4F - Trigger 4 falling edge</li>
+						<li>TRSR - Trigger service key rising edge</li>
+						<li>TRSF - Trigger service key falling edge</li>
+						<li>IDLE - Idle</li>
+					</ol>
+			</ul>
+			
+			JSON data: <br>
+			<pre>{"GET": {"PT": {"TR": value}}}</pre>
+			<H4>Example</H4>
+			<pre>{"GET": {"PT": {"TR": "NA"}}}</pre><br>
+			Formatted: <br>
+			<pre><code>{</code>
+<code>  "GET":  {</code>
+<code>    "PT":  {</code>
+<code>      "NA"</code>
+<code>    }</code>
+<code>}</code></pre>
+			
+			<H3>PUSH Message</H3>
+			For the PT message two different PUSH messages can be received depending on the initiater of the message.<br>
+			If the running pattern changes, a PUSH message with only the name of the currently running pattern is sent.<br>
+			But if the running pattern is requested through a GET command the message contains both a NAME and TR value from the requested trigger.<br><br>
+			
+			Direction: 
+			<ul>
+				<li>Source:  Jimbi</li>
+				<li>Destination:  MQTT</li>
+			</ul>
+			
+			<H4>Initiated by a change in running pattern: </H4>
+			
+			Topic:  &lt;device name&gt;/&lt;jsondata&gt;<br>
+			Parameters: 
+			<ul>
+				<li>Values: </li>
+					<ol style="list-style-type:  circle; padding-bottom:  0;">
+						<li>NA - if no pattern is active</li>
+						<li>&lt;pattern name&gt;</li>
+					</ol>
+			</ul>
+			
+			JSON data: <br>
+			<pre>{"PUSH": {"PT": "&lt;name of running pattern&gt;"}}</pre>
+			<H4>Example</H4>
+			If a pattern is running: <br>
+			<pre>{"PUSH": {"PT": "Upstairs"}}</pre><br>
+			If no pattern is running: <br>
+			<pre>{"PUSH": {"PT": "NA"}}</pre><br>
+			Formatted: <br>
+			<pre><code>{</code>
+<code>  "PUSH":  {</code>
+<code>    "PT":  "NA"</code>
+<code>  }</code>
+<code>}</code></pre>
+			<br>
+			<H4>Initiated by a GET request: </H4>
+			
+			Topic:  &lt;device name&gt;/&lt;jsondata&gt;<br>
+			Parameters: 
+			<ul>
+				<li>TR values:  </li>
+					<ol style="list-style-type:  circle; padding-bottom:  0;">
+						<li>NA 			- Running pattern</li>
+						<li>TR1R - Trigger 1 rising edge</li>
+						<li>TR1F - Trigger 1 falling edge</li>
+						<li>TR2R - Trigger 2 rising edge</li>
+						<li>TR2F - Trigger 2 falling edge</li>
+						<li>TR3R - Trigger 3 rising edge</li>
+						<li>TR3F - Trigger 3 falling edge</li>
+						<li>TR4R - Trigger 4 rising edge</li>
+						<li>TR4F - Trigger 4 falling edge</li>
+						<li>TRSR - Trigger service key rising edge</li>
+						<li>TRSF - Trigger service key falling edge</li>
+						<li>IDLE - Idle</li>
+					</ol>
+				<li>NAME values:  </li>
+					<ol style="list-style-type:  circle; padding-bottom:  0;">
+						<li>&lt;pattern name&gt;</li>
+					</ol>
+			</ul>
+			
+			JSON data: <br>
+			<pre>{"PUSH": {"PT": {"TR": value,"NAME": &lt;name of running pattern&gt;}}}</pre>
+			<H4>Example</H4>
+			<pre>{"PUSH": {"PT": {"TR": "NA","NAME": "Upstairs"}}}</pre><br>
+			<pre>{"PUSH": {"PT": {"TR": "IDLE","NAME": "NA"}}}</pre><br>
+			Formatted: <br>
+			<pre><code>{</code>
+<code>  "PUSH":  {</code>
+<code>    "PT":  {</code>
+<code>      "NA",</code>
+<code>      "NAME":  "Upstairs"</code>
+<code>  }</code>
+<code>}</code></pre>
+			<br>	
+			
+			<a href="#TOP">Back to top</a><br>
+			
+			<H2 id="PTL">Pattern List Message</H2>
+			With the pattern list message it's possible to request the available patterns on the Jimbi
+			
+			<H3>GET Message</H3>
+			Direction: 
+			<ul>
+				<li>Source:  MQTT</li>
+				<li>Destination:  Jimbi</li>
+			</ul>
+			Topic:  &lt;device name&gt;/&lt;jsondata&gt;<br>
+			Parameters: 
+			<ul>
+				<li>Values:  0 - 99*</li>
+			</ul>
+			*<br>
+			0 - All available patterns<br>
+			n - First n number of patterns<br><br>
+			
+			JSON data: <br>
+			<pre>{"GET": {"PTL": &lt;nr. of patterns&gt;}}</pre>
+			<H4>Example</H4>
+			<pre>{"GET": {"PTL": 0}}</pre><br>
+			Formatted: <br>
+			<pre><code>{</code>
+<code>  "GET":  {</code>
+<code>    "PTL":  0</code>
+<code>  }</code>
+<code>}</code></pre>
+			
+			<H3>PUSH Message</H3>
+			Direction: 
+			<ul>
+				<li>Source:  Jimbi</li>
+				<li>Destination:  MQTT</li>
+			</ul>
+			Topic:  &lt;device name&gt;/&lt;jsondata&gt;<br>
+			Parameters: 
+			<ul>
+				<li>Values PTL: 	&lt;name of pattern n&gt;</li>
+			</ul>
+			
+			JSON data: <br>
+			<pre>{"PUSH": {"PTL": ["&lt;name of pattern 1&gt;","&lt;name of pattern 2&gt;","&lt;name of pattern 3&gt;","&lt;name of pattern 4&gt;","&lt;name of pattern n&gt;"]}}</pre>
+			<H4>Example</H4>
+			<pre>{"PUSH": {"PTL": ["TestUpstairs","TestDownstairs","TestPWM","TestRGB","TestRGBW"]}}</pre><br>
+			Formatted: <br>
+			<pre><code>{</code>
+<code>  "PUSH":  {</code>
+<code>    "PTL":  [</code>
+<code>      "TestUpstairs",</code>
+<code>      "TestDownstairs",</code>
+<code>      "TestPWM",</code>
+<code>      "TestRGB",</code>
+<code>      "TestRGBW"</code>
+<code>    ]</code>
+<code>  }</code>
+<code>}</code></pre>
+			<br>
+			<a href="#TOP">Back to top</a><br>
+			
+			<H2 id="IP">IP message</H2>
+			With the IP message it is possible to request the assigned IP address from the Jimbi module
+			
+			<H3>GET Message</H3>
+			Direction: 
+			<ul>
+				<li>Source:  MQTT</li>
+				<li>Destination:  Jimbi</li>
+			</ul>
+			Topic:  &lt;device name&gt;/&lt;jsondata&gt;<br>
+			Parameters: 
+			<ul>
+				<li>Type:  "full", "number"*</li>
+			</ul>
+			*<br>
+			"full" = returns the full IP address:  	192.168.1.10<br>
+			"number" = returns the last number of the ip address:  10<br><br>
+			
+			JSON data: <br>
+			<pre>{"GET": {"IP": "&lt;length&gt;"}}</pre>
+			<H4>Example</H4>
+			<pre>{"GET": {"IP": "full"}}</pre><br>
+			Formatted: <br>
+			<pre><code>{</code>
+<code>  "GET":  {</code>
+<code>    "IP":  "full"</code>
+<code>  }</code>
+<code>}</code></pre>
+			<H3>PUSH Message</H3>
+			Direction: 
+			<ul>
+				<li>Source:  Jimbi</li>
+				<li>Destination:  MQTT</li>
+			</ul>
+			Topic:  &lt;device name&gt;/&lt;jsondata&gt;<br>
+			Parameters: 
+			<ul>
+				<li>Value:  &lt;IP Address&gt;</li>
+			</ul>
+			
+			JSON data: <br>
+			<pre>{"PUSH": {"IP": "&lt;IP address&gt;"}}</pre>
+			<H4>Example</H4>
+			<pre>{"PUSH": {"IP": "192.168.1.10"}}</pre><br>
+			Formatted: <br>
+			<pre><code>{</code>
+<code>  "PUSH":  {</code>
+<code>    "IP":  "192.168.1.10"</code>
+<code>  }</code>
+<code>}</code></pre>
+			<br>
+			<a href="#TOP">Back to top</a><br>
+		</div>
+		Document revision: V.1.0.0
+	</body>
+</html>
